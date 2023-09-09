@@ -31,10 +31,10 @@ export default class AccountService {
 		}
 	}
 
-	async getAccount (accountId: string) {
-		const connection = pgp()("postgres://postgres:pass123@localhost:5432/app");
+	async getAccount (accountId: string, externalConnection?: pgp.IDatabase<{}, pg.IClient>) {
+		const connection = externalConnection ?? pgp()("postgres://postgres:pass123@localhost:5432/app");
 		const [account] = await connection.query("select * from cccat13.account where account_id = $1", [accountId]);
-		await connection.$pool.end();
+		!externalConnection && await connection.$pool.end();
 		return account;
 	}
 

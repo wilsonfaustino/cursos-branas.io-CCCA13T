@@ -15,7 +15,7 @@ export default class RideService {
     try {
       const rideId = crypto.randomUUID();
       const date = new Date();
-      const accountInfo = await this.AccountService.getAccount(input.accountId);
+      const accountInfo = await this.AccountService.getAccount(input.accountId, connection);
       if (!accountInfo.is_passenger) throw new Error("Account does not belong to a passenger");
       if (await this.isPassengerOnAnyRide(input.accountId, connection)) throw new Error("Passenger is already on a ride");
       await connection.query("insert into cccat13.ride (ride_id, passenger_id, driver_id, status, fare, distance, from_lat, from_long, to_lat, to_long, date) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", [ rideId, input.accountId, null, "requested", 0, 0, input.from.lat, input.from.long, input.to.lat, input.to.long, date,]);
@@ -53,7 +53,7 @@ export default class RideService {
   async acceptRide (input: {rideId: string, driverId: string}) {
     const connection = pgp()("postgres://postgres:pass123@localhost:5432/app");
     try {
-      const accountInfo = await this.AccountService.getAccount(input.driverId);
+      const accountInfo = await this.AccountService.getAccount(input.driverId, connection);
       if (!accountInfo.is_driver) throw new Error("Account does not belong to a driver");
       const rideInfo = await this.getRideById(input.rideId, connection);
       if (rideInfo.status !== "requested") throw new Error("Ride is not available for acceptance");
