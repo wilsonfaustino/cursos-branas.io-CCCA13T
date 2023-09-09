@@ -1,12 +1,16 @@
 import AccountService from "../AccountService";
 
+const baseInput = () => ({
+  name: "John Doe",
+  email: `john.doe${Math.random()}@gmail.com`,
+  cpf: "95818705552",
+  isPassenger: true,
+});
+
 describe("AccountService", () => {
   test("Should create a passenger account", async () => {
     const input = {
-      name: "John Doe",
-      email: `john.doe${Math.random()}@gmail.com`,
-      cpf: "95818705552",
-      isPassenger: true,
+      ...baseInput(),
     };
     const accountService = new AccountService();
     const output = await accountService.signup(input);
@@ -19,10 +23,8 @@ describe("AccountService", () => {
 
   test("Should not create a passenger account with invalid cpf", async () => {
     const input = {
-      name: "John Doe",
-      email: `john.doe${Math.random()}@gmail.com`,
+      ...baseInput(),
       cpf: "95818705500",
-      isPassenger: true,
     };
     const accountService = new AccountService();
     await expect(() => accountService.signup(input)).rejects.toThrow(
@@ -32,10 +34,8 @@ describe("AccountService", () => {
 
   test("Should not create a passenger account with invalid name", async () => {
     const input = {
+      ...baseInput(),
       name: "John",
-      email: `john.doe${Math.random()}@gmail.com`,
-      cpf: "95818705552",
-      isPassenger: true,
     };
     const accountService = new AccountService();
     await expect(() => accountService.signup(input)).rejects.toThrow(
@@ -45,10 +45,8 @@ describe("AccountService", () => {
 
   test("Should not create a passenger account with invalid email", async () => {
     const input = {
-      name: "John Doe",
+      ...baseInput(),
       email: `john.doe${Math.random()}@`,
-      cpf: "95818705552",
-      isPassenger: true,
     };
     const accountService = new AccountService();
     await expect(() => accountService.signup(input)).rejects.toThrow(
@@ -58,10 +56,7 @@ describe("AccountService", () => {
 
   test("Should not create a passenger account with existing account", async () => {
     const input = {
-      name: "John Doe",
-      email: `john.doe${Math.random()}@gmail.com`,
-      cpf: "95818705552",
-      isPassenger: true,
+      ...baseInput(),
     };
     const accountService = new AccountService();
     await accountService.signup(input);
@@ -72,9 +67,8 @@ describe("AccountService", () => {
 
   test("Should create a driver account", async () => {
     const input = {
-      name: "John Doe",
-      email: `john.doe${Math.random()}@gmail.com`,
-      cpf: "95818705552",
+      ...baseInput(),
+      isPassenger: false,
       carPlate: "AAA9999",
       isDriver: true,
     };
@@ -89,11 +83,10 @@ describe("AccountService", () => {
 
   test("Should not create a driver account with invalid plate", async () => {
     const input = {
-      name: "John Doe",
-      email: `john.doe${Math.random()}@gmail.com`,
-      cpf: "95818705552",
-      carPlate: "AAA99",
+      ...baseInput(),
+      isPassenger: false,
       isDriver: true,
+      carPlate: "AAA99",
     };
     const accountService = new AccountService();
     await expect(() => accountService.signup(input)).rejects.toThrow(
